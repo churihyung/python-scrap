@@ -24,19 +24,56 @@ def max_page_finder(start=0):
     return max_page
 
 
-def extra_indeed_jobs(last_page):
-#  for page in range(last_page):
-  result = requests.get(f"{URL}&start={0*LIMIT}")
-  soup = BeautifulSoup(result.text, "html.parser")
-  result_div = soup.find_all("div",{"id":"mosaic-provider-jobcards"})
+def extract_job(html):
+  jks=[]
+  a_jk = html.find_all('a',recursive=False)
+  for jk in a_jk:
+    jks.append(jk['data-jk'])
   
-  for div in result_div:
+  results = []
+  tables = html.find_all("table",{"class":"jobCard_mainContent"})
+  for table in tables:
 
-    tables = div.find_all("table",{"class":"jobCard_mainContent"})
-    for table in tables:
-      test = table.find("div",{"class":"heading4"})
-      find = test.find("span",title=True).string
-      print(find)
+    #title
+    div_h4 = table.find("div",{"class":"heading4"})
+    title = div_h4.find("span",title=True).string
+    # print(title)
+
+    #company
+    div_h6 = table.find("div",{"class":"heading6"})
+    company_span = div_h6.find("span",{"class":"companyName"})
+    if company_span is not None:
+      company = company_span.string
+    else: 
+      company = div_h6.find("div",{"class":"companyLocation"}).string
+    
+
+    #location
+    loca_h6 = table.find("div",{"class":"heading6"})
+    location = loca_h6.find("div",{"class":"companyLocation"}).string
+
+    results.append({"title" : title, "company" : company,"location":location})
+  i = 0
+  for bef_result in results:
+    if len(jks) >i:
+      bef_result['link'] = 'https://kr.indeed.com/%EC%B1%84%EC%9A%A9%EB%B3%B4%EA%B8%B0?jk=' +jks[i] +' '
+    else:
+      bef_result['link'] = ''
+    i += 1
+  return results
+
+def extra_indeed_jobs(last_page):
+  jobs = []
+  for page in range(last_page):
+    print(f'start page : {page}')
+    result = requests.get(f"{URL}&start={page*LIMIT}")
+    soup = BeautifulSoup(result.text, "html.parser")
+    result_div = soup.find_all("div",{"id":"mosaic-provider-jobcards"})
+
+    for div in result_div:
+      result = extract_job(div)
+      jobs=jobs+result
+  return jobs
     
 
       
