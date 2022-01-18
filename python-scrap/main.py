@@ -1,7 +1,9 @@
-from indeed_max_page import max_page_finder, extra_indeed_jobs
+from indeed_max_page import get_indeed_job as indeed_job
+from so_max_page import get_so_job as so_job
 
 
-max_page = max_page_finder()
+# get_indeed_job = indeed_job()
+get_so_job = so_job()
 
-indeed_jobs = extra_indeed_jobs(max_page)
-print(indeed_jobs)
+# print(get_indeed_job)
+print(get_so_job)

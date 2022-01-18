@@ -3,6 +3,7 @@ import requests
 
 LIMIT = 50
 URL = f"https://kr.indeed.com/jobs?q=javascript&limit={LIMIT}&filter=0"
+
 def max_page_finder(start=0):
   indeed_url = f"{URL}&start={start * 50}"
   indeed_result = requests.get(indeed_url)
@@ -77,7 +78,11 @@ def extra_indeed_jobs(last_page):
     
 
       
+def get_indeed_job():
+  max_page = max_page_finder()
+  indeed_jobs = extra_indeed_jobs(max_page) 
 
+  return indeed_jobs
 
 
 
