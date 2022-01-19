@@ -17,7 +17,7 @@ brand_a = brand_box.find_all("a",{"class":"goodsBox-info"})
 
 alba = []
 
-
+print("start csv extract")
 ###########     1번 start    ###################
 for a in brand_a:
   brands = a.find_all("span",{"class":"company"})
@@ -25,7 +25,7 @@ for a in brand_a:
   
   for brand in brands:
     if brand.string is not None:
-      brand_name = brand.string
+      brand_name = brand.string.strip()
       alba.append({"company":brand_name,"link":a["href"]})
     else:
       brand_name = brand.find("strong").string + "test"
@@ -51,34 +51,34 @@ for link in alba:
   alba_detail = []
 
   for tr in normal_info.find_all("tr"):
-    print(tr)
+    
     if tr.find("td",{"class":"local"}) is not None:
       local = tr.find("td",{"class":"local"}).get_text()
     else:
-      local = 'what'
+      pass
 
     if tr.find("span",{"class":"company"}) is not None:
       title = tr.find("span",{"class":"company"}).get_text()
 
     else:
-      title = 'happen'
+      pass
     
     if tr.find("span",{"class":"time"}) is not None:
       alba_time = tr.find("span",{"class":"time"}).get_text()
 
     else:
-      alba_time = 'in'
+      pass
 
     if tr.find("span",{"class":"payIcon"}) is not None:
       pay = tr.find("span",{"class":"payIcon"}).get_text() + tr.find("span",{"class":"number"}).get_text()
 
     else:
-      pay = 'code'
+      pass
 
     if tr.find("td",{"class":"regDate"}) is not None:
       alba_date = tr.find("td",{"class":"regDate"}).get_text() 
     else:
-      alba_date = '?'
+      pass
 
     alba_detail.append({"local":local,"title":title,"time":alba_time,"pay":pay,"date":alba_date})
 
@@ -86,7 +86,7 @@ for link in alba:
 
 
 #### 3번 start ######
-  file = open((link["company"])+".csv", mode="w")
+  file = open((link["company"].replace('/','_'))+".csv", mode="w")
   writer = csv.writer(file)
   writer.writerow(["place","title","time","pay","date"])
   
@@ -95,7 +95,7 @@ for link in alba:
     writer.writerow(detail.values())
 
 #### 3번 end #################
-
+print("extract end")
 
 
 
